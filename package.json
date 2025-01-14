@@ -1,0 +1,29 @@
+{
+  "name": "cs_433",
+  "version": "1.0.0",
+  "description": "\"A browser extension for analyzing web application session security\"",
+  "main": "src/background/background.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnnycashpersonal/CS_433_TermProj.git"
+  },
+  "keywords": [
+    "security",
+    "session",
+    "analysis",
+    "browser-extension"
+  ],
+  "author": "John Moore, Neal Kimchi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johnnycashpersonal/CS_433_TermProj/issues"
+  },
+  "homepage": "https://github.com/johnnycashpersonal/CS_433_TermProj#readme"
+}

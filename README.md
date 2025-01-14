@@ -14,6 +14,15 @@ Session Security Analyzer continuously monitors and analyzes session management 
 - Implementation of security best practices
 - Vulnerability detection and assessment
 
+```mermaid
+graph TD
+    A[Browser Extension] -->|Captures| B[Token Collector]
+    B -->|Processes| C[Analysis Engine]
+    C -->|Feeds| D[Security Analyzer]
+    D -->|Generates| E[Report Generator]
+    E -->|Displays| A
+```
+
 ## Features
 
 The extension operates in two distinct modes to provide comprehensive session security analysis:
