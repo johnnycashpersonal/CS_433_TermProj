@@ -1,1 +1,1 @@
-# CS_433_TermProj
+# CS 433 Term Project
