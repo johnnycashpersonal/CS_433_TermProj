@@ -1,7 +1,25 @@
-
-Based on your project proposal and constraints, I'll design a detailed system architecture for your browser extension focused on session security analysis. This design aims to be implementable within your 10-hour per week time constraint while delivering meaningful security insights.
-
 # Session Security Analyzer - System Architecture Design
+
+## Workflow of Extension
+
+1. Your browser extension captures session-related data:
+
+- Cookies being set
+- Local/session storage modifications
+- Authentication form submissions
+- HTTP headers (particularly Set-Cookie)
+
+2. This data is analyzed in real-time:
+
+- Token entropy and patterns
+- Security configurations
+- Session management behavior
+
+3. The system generates alerts and reports:
+
+- Security scores for different aspects
+- Detailed vulnerability explanations
+- Specific recommendations for fixes
 
 ## 1. High-Level Architecture
 
@@ -22,114 +40,43 @@ graph TD
     E -->|Displays| A
 ```
 
-## 2. Detailed Component Specifications
+### Security Vulnerabilities to Check for
 
-### 2.1 Browser Extension Frontend
+1. Token Randomness and Predictability
 
-The extension will operate in two modes:
+- Shannon entropy calculations measure how unpredictable the tokens are, with higher entropy indicating better randomness and security
+- Tokens with low entropy might be guessable, similar to using sequential ID badge numbers
+- The analyzer should detect common patterns that make tokens predictable
 
-1. **Passive Monitoring Mode**
-   - Automatically intercepts and logs session-related HTTP headers
-   - Monitors cookie operations through the browser's cookie API
-   - Tracks localStorage and sessionStorage modifications
-   - Implements event listeners for authentication-related form submissions
+2. Dangerous Token Patterns
 
-2. **Active Analysis Mode**
-   - Triggers on-demand deep scans of current session mechanisms
-   - Provides real-time feedback through a popup interface
-   - Allows manual initiation of security checks
+- Embedded timestamps that could reveal token creation time
+- Sequential or incremental counters that make next values guessable
+- User information directly encoded in the token, which could expose user data
+- Simple Base64 encoding of values, which provides no real security
 
-Implementation specifications:
+3. Cookie Configuration Security
 
-```javascript
-// Core Extension Structure
-{
-  manifest_version: 3,
-  permissions: [
-    "webRequest",
-    "cookies",
-    "storage",
-    "activeTab",
-    "scripting"
-  ],
-  background: {
-    service_worker: "background.js"
-  },
-  content_scripts: [{
-    matches: ["<all_urls>"],
-    js: ["tokenCollector.js"]
-  }]
-}
-```
+- Missing HttpOnly flag allows JavaScript to access cookies, enabling cross-site scripting attacks
+- Absence of Secure flag permits cookie transmission over insecure HTTP connections
+- Incorrect SameSite attribute settings expose cookies to cross-site request forgery
+- Overly permissive domain and path settings that allow cookies to be accessed by unauthorized endpoints
 
-### 2.2 Token Analysis Engine
+## Component Flow
 
-The engine will implement the following analyzers:
+when a user logs into a website, here's how the components interact:
+1. The tokenCollector.js notices the login form submission through formInterceptor.js, and domObserver.js watches for the session token being set.
 
-1. **Token Structure Analyzer**
-   - Length validation
-   - Entropy measurement
-   - Pattern detection
-   - Encoding verification
+2. When a token is found, it's passed through the analysis engine:
 
-2. **Token Behavior Analyzer**
-   - Lifecycle tracking
-   - Renewal patterns
-   - Expiration policy
-   - Scope analysis
+- entropyCalculator.js measures how random and unpredictable it is
+- patternDetector.js looks for any dangerous patterns
+- tokenAnalyzer.js combines these results
 
-Core analysis implementation:
+3. The rule engine then evaluates the token:
 
-```javascript
-class TokenAnalyzer {
-  async analyzeToken(token) {
-    return {
-      entropy: this.calculateEntropy(token),
-      patterns: this.detectPatterns(token),
-      strength: this.assessStrength(token),
-      vulnerabilities: await this.checkVulnerabilities(token)
-    };
-  }
+- bestPractices.js provides the security standards
+- securityRules.js implements the actual checks
+- ruleEngine.js coordinates the evaluation
 
-  calculateEntropy(token) {
-    // Shannon entropy calculation
-    let freq = new Map();
-    let entropy = 0;
-    // Implementation details...
-    return entropy;
-  }
-}
-```
-
-### 2.3 Security Rule Engine
-
-The rule engine will check for:
-
-1. **Critical Vulnerabilities**
-   - Predictable token patterns
-   - Insufficient entropy
-   - Missing security flags
-   - Improper scope settings
-
-2. **Best Practice Violations**
-   - Token length requirements
-   - HTTP-only flag usage
-   - Secure flag implementation
-   - SameSite attribute configuration
-
-### 2.4 Reporting Service
-
-The reporting module will generate:
-
-1. **Real-time Alerts**
-   - Severity-based notifications
-   - Immediate vulnerability warnings
-   - Actionable fix recommendations
-
-2. **Detailed Reports**
-   - Comprehensive security analysis
-   - Historical tracking
-   - Trend analysis
-   - Remediation guidance
-
-## 3. Implementation Timeline
+4. Finally, reportGenerator.js and visualizations.js present the findings to the user through the extension's interface.
